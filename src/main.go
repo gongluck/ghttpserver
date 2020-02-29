@@ -8,6 +8,13 @@ import (
 	"gopkg.in/ini.v1"
 )
 
+func CheckErr(err error) {
+	if err != nil {
+		log.Fatalln("Fail happen,", err)
+		os.Exit(1)
+	}
+}
+
 func PrintRequest(req *http.Request) {
 	log.Println(req.RemoteAddr, "connected")
 	log.Println(req.Method, req.RequestURI)
@@ -26,25 +33,12 @@ func ServeHTTP(respon http.ResponseWriter, req *http.Request) {
 func main() {
 	// config
 	cfg, err := ini.Load("./config.ini")
-	if err != nil {
-		log.Fatalln("Fail to read config file, ", err)
-		os.Exit(1)
-	}
+	CheckErr(err)
 	address := cfg.Section("address")
-	if address == nil {
-		log.Fatalln("Fail to read address section")
-		os.Exit(2)
-	}
 	ip, err := address.GetKey("ip")
-	if err != nil {
-		log.Fatalln("Fail to get ip config, ", err)
-		os.Exit(3)
-	}
+	CheckErr(err)
 	port, err := address.GetKey("port")
-	if err != nil {
-		log.Fatalln("Fail to get port config, ", err)
-		os.Exit(4)
-	}
+	CheckErr(err)
 
 	log.Println("config of ip:", ip.String(), ", port:", port.String())
 	connaddr := ip.String() + ":" + port.String()
